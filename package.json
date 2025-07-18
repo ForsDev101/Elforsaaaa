@@ -1,17 +1,19 @@
 {
-  "name": "askeri-discord-bot",
+  "name": "askeri-roblox-discord-bot",
   "version": "1.0.0",
-  "description": "Roblox askeri oyun için Discord botu",
+  "description": "Askeri Roblox oyunu için Discord botu",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "SeninAdin",
+  "author": "SeninIsmin",
   "license": "MIT",
-  "engines": {
-    "node": ">=16"
-  },
   "dependencies": {
-    "discord.js": "^14.11.0"
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "rowifi": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=16.9.0"
   }
 }
