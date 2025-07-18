@@ -13,6 +13,7 @@ const client = new Client({
 });
 
 // Secretler (Zeabur için environment variables olarak tanımla)
+await noblox.setCookie(process.env.AUTH_CKIE);
 const TOKEN = process.env.DISCORD_TOKEN;
 const OWNER_ID = process.env.OWNER_ID;
 const GROUP_ID = Number(process.env.GROUP_ID);
