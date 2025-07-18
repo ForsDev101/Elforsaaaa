@@ -1,6 +1,6 @@
 const { Client, GatewayIntentBits, Partials, EmbedBuilder, PermissionsBitField, Collection } = require("discord.js");
 const noblox = require("noblox.js");
-await noblox.setCookie(process.env.AUTH_CKIE);
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
