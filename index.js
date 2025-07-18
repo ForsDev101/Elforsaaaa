@@ -11,7 +11,15 @@ const client = new Client({
   ],
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
-
+(async () => {
+  try {
+    await noblox.setCookie(process.env.AUTH_CKIE);
+    const user = await noblox.getCurrentUser();
+    console.log(`[✅] Roblox cookie başarıyla yüklendi: ${user.UserName}`);
+  } catch (err) {
+    console.error("[❌] Roblox cookie hatası:", err.message);
+  }
+})();
 // Secretler (Zeabur için environment variables olarak tanımla)
 const TOKEN = process.env.DISCORD_TOKEN;
 const OWNER_ID = process.env.OWNER_ID;
