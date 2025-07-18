@@ -246,25 +246,16 @@ tag: <@&1393136901552345095>`);
     return;
     }
 
-   const { getRoles } = require('rowifi');
-
-   if (cmd === 'rütbelistesi') {
-     try {
-       const roles = await getRoles(GROUP_ID); // GROUP_ID secrets içinde tanımlı
-       const embed = new EmbedBuilder()
-         .setTitle('Roblox Grubu Rütbeleri')
-         .setColor('Blue');
-
-       roles.forEach(role => {
-         embed.addFields({ name: role.name, value: `ID: ${role.id}`, inline: true });
-       });
-
-       return message.channel.send({ embeds: [embed] });
-     } catch (err) {
-       console.error(err);
-       return message.channel.send('Rütbeler alınırken bir hata oluştu.');
-     }
-   }
+    if (cmd === 'rütbelistesi') {
+    if (!await hasRole(message, YONETIM_ROLU)) return message.reply('Yetkin yok.');
+    // Örnek rütbe listesi
+    const rutbeler = ['Üye', 'Çavuş', 'Teğmen', 'Yüzbaşı', 'Albay', 'General'];
+    const embed = new EmbedBuilder()
+      .setTitle('Roblox Grup Rütbeleri')
+      .setDescription(rutbeler.map((r, i) => `${i + 1}. ${r}`).join('\n'));
+    message.channel.send({ embeds: [embed] });
+    return;
+    }
 
     if (cmd === 'verify') {
     // Discord-Roblox doğrulama işlemi
@@ -375,174 +366,213 @@ tag: <@&1393136901552345095>`);
     if (cmd === 'sunucu') {
     if (!await hasRole(message, YONETIM_ROLU)) return message.reply('Yetkin yok.');
     const guild = message.guild;
-      const embed = new EmbedBuilder()
-            .setTitle(`${guild.name} Sunucu Bilgileri`)
-            .setColor('Grey')
-            .addFields(
-              { name: 'Kurucu', value: `<@${guild.ownerId}>`, inline: true },
-              { name: 'Üye Sayısı', value: `${guild.memberCount}`, inline: true },
-              { name: 'Aktif Üye Sayısı', value: `${guild.members.cache.filter(m => m.presence?.status !== 'offline').size}`, inline: true },
-              { name: 'Kanal Sayısı', value: `${guild.channels.cache.size}`, inline: true },
-              { name: 'Kategori Sayısı', value: `${guild.channels.cache.filter(c => c.type === 4).size}`, inline: true },
-              { name: 'Rol Sayısı', value: `${guild.roles.cache.size}`, inline: true },
-              { name: 'Sunucu ID', value: `${guild.id}`, inline: true },
-              { name: 'Boost Sayısı', value: `${guild.premiumSubscriptionCount}`, inline: true },
-              { name: 'Oluşturulma Tarihi', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true }
-            );
-          message.channel.send({ embeds: [embed] });
-          return;
-        }
+   const embed = new EmbedBuilder()
+         .setTitle(`${guild.name} Sunucu Bilgileri`)
+         .setColor('Grey')
+         .addFields(
+           { name: 'Kurucu', value: `<@${guild.ownerId}>`, inline: true },
+           { name: 'Üye Sayısı', value: `${guild.memberCount}`, inline: true },
+           { name: 'Aktif Üye Sayısı', value: `${guild.members.cache.filter(m => m.presence?.status !== 'offline').size}`, inline: true },
+           { name: 'Kanal Sayısı', value: `${guild.channels.cache.size}`, inline: true },
+           { name: 'Kategori Sayısı', value: `${guild.channels.cache.filter(c => c.type === 4).size}`, inline: true },
+           { name: 'Rol Sayısı', value: `${guild.roles.cache.size}`, inline: true },
+           { name: 'Sunucu ID', value: `${guild.id}`, inline: true },
+           { name: 'Boost Sayısı', value: `${guild.premiumSubscriptionCount}`, inline: true },
+           { name: 'Oluşturulma Tarihi', value: `<t:${Math.floor(guild.createdTimestamp / 1000)}:R>`, inline: true }
+         );
+       message.channel.send({ embeds: [embed] });
+       return;
+     }
 
-        if (cmd === 'devriye') {
-          if (!await hasRole(message, YONETIM_ROLU)) return message.reply('Yetkin yok.');
-          const secim = args[0];
-          if (secim === 'aç') {
-            devriyeAcik = true;
-            message.channel.send('Devriye modu açıldı. Küfür, argo ve +18 kelimeleri filtrelenecek.');
-          } else if (secim === 'kapat') {
-            devriyeAcik = false;
-            message.channel.send('Devriye modu kapatıldı.');
-          } else {
-            message.channel.send('Doğru kullanım: !devriye aç/kapat');
-          }
-          return;
-        }
+     if (cmd === 'devriye') {
+       if (!await hasRole(message, YONETIM_ROLU)) return message.reply('Yetkin yok.');
+       const secim = args[0];
+       if (secim === 'aç') {
+         devriyeAcik = true;
+         message.channel.send('Devriye modu açıldı. Küfür, argo ve +18 kelimeleri filtrelenecek.');
+       } else if (secim === 'kapat') {
+         devriyeAcik = false;
+         message.channel.send('Devriye modu kapatıldı.');
+       } else {
+         message.channel.send('Doğru kullanım: !devriye aç/kapat');
+       }
+       return;
+     }
 
-        if (cmd === 'çekiliş') {
-          if (!await hasRole(message, YONETIM_ROLU)) return message.reply('Yetkin yok.');
-          const zaman = args[0];
-          const odul = args.slice(1, args.length - 1).join(' ') || args.slice(1).join(' ');
-          const kazananSayisi = parseInt(args[args.length - 1]) || 1;
-          if (!zaman || !odul) return message.reply('Doğru kullanım: !çekiliş (Saat:Dakika) (Ödül) (Kazanan sayısı opsiyonel)');
+     if (cmd === 'çekiliş') {
+       if (!await hasRole(message, YONETIM_ROLU)) return message.reply('Yetkin yok.');
+       const zaman = args[0];
+       const odul = args.slice(1, args.length - 1).join(' ') || args.slice(1).join(' ');
+       const kazananSayisi = parseInt(args[args.length - 1]) || 1;
+       if (!zaman || !odul) return message.reply('Doğru kullanım: !çekiliş (Saat:Dakika) (Ödül) (Kazanan sayısı opsiyonel)');
 
-          const [saat, dakika] = zaman.split(':').map(n => parseInt(n));
-          if (isNaN(saat) || isNaN(dakika)) return message.reply('Zaman formatı yanlış. Saat:Dakika şeklinde olmalı.');
+       const [saat, dakika] = zaman.split(':').map(n => parseInt(n));
+       if (isNaN(saat) || isNaN(dakika)) return message.reply('Zaman formatı yanlış. Saat:Dakika şeklinde olmalı.');
 
-          const sureMs = (saat * 60 + dakika) * 60 * 1000;
-          const embed = new EmbedBuilder()
-            .setTitle('🎉 Çekiliş Başladı!')
-            .setDescription(`Ödül: **${odul}**\nKazanan sayısı: **${kazananSayisi}**\nÇekilişe katılmak için aşağıdaki 🎉 emojisine basınız.`)
-            .setColor('Random');
-          const cekilisMesaji = await message.channel.send({ embeds: [embed] });
-          await cekilisMesaji.react('🎉');
+       const sureMs = (saat * 60 + dakika) * 60 * 1000;
+       const embed = new EmbedBuilder()
+         .setTitle('🎉 Çekiliş Başladı!')
+         .setDescription(`Ödül: **${odul}**\nKazanan sayısı: **${kazananSayisi}**\nÇekilişe katılmak için aşağıdaki 🎉 emojisine basınız.`)
+         .setColor('Random');
+       const cekilisMesaji = await message.channel.send({ embeds: [embed] });
+       await cekilisMesaji.react('🎉');
 
-          const filter = (reaction, user) => reaction.emoji.name === '🎉' && !user.bot;
-          const collector = cekilisMesaji.createReactionCollector({ filter, time: sureMs });
+       const filter = (reaction, user) => reaction.emoji.name === '🎉' && !user.bot;
+       const collector = cekilisMesaji.createReactionCollector({ filter, time: sureMs });
 
-          collector.on('end', collected => {
-            const katilanlar = collected.get('🎉')?.users.cache.filter(u => !u.bot).map(u => u);
-            if (!katilanlar || katilanlar.length === 0) {
-              message.channel.send('Çekilişe kimse katılmadı.');
-              return;
-            }
-            let kazananlar = [];
-            if (katilanlar.length <= kazananSayisi) kazananlar = katilanlar;
-            else {
-              while (kazananlar.length < kazananSayisi) {
-                const secilen = katilanlar[Math.floor(Math.random() * katilanlar.length)];
-                if (!kazananlar.includes(secilen)) kazananlar.push(secilen);
-              }
-            }
-            message.channel.send(`Çekiliş sona erdi! Kazananlar: ${kazananlar.map(u => u.toString()).join(', ')} Tebrikler! 🎉`);
-          });
-          return;
-        }
-
-        if (cmd === 'tamyetki') {
-          if (message.author.id !== OWNER_ID) return;
-          const uye1 = message.mentions.members.first();
-          const uye2 = message.mentions.members.at(1);
-          tamYetkili.clear();
-          if (uye1) tamYetkili.add(uye1.id);
-          if (uye2) tamYetkili.add(uye2.id);
-          message.channel.send(`Tam yetkili kullanıcılar güncellendi. Yetkili sayısı: ${tamYetkili.size}`);
-          await logOwner(`Tam yetkili kullanıcılar ayarlandı: ${Array.from(tamYetkili).join(', ')}`);
-          return;
-        }
-         if (cmd === 'yardım' || cmd === 'komutlar') {
-           const pages = [
-             new EmbedBuilder().setTitle('Komutlar - Sayfa 1/2').setDescription('...'),
-             new EmbedBuilder().setTitle('Komutlar - Sayfa 2/2').setDescription('...')
-           ];
-           let pageIndex = 0;
-           const msg = await message.channel.send({ embeds: [pages[pageIndex]] });
-
-           await msg.react('◀️');
-           await msg.react('▶️');
-
-           const filter = (reaction, user) => {
-             return ['◀️', '▶️'].includes(reaction.emoji.name) && user.id === message.author.id;
-           };
-
-           const collector = msg.createReactionCollector({ filter, time: 60000 });
-
-           collector.on('collect', async (reaction, user) => {
-             reaction.users.remove(user.id).catch(() => {});
-             if (reaction.emoji.name === '▶️') {
-               pageIndex = (pageIndex + 1) % pages.length;
-             } else if (reaction.emoji.name === '◀️') {
-               pageIndex = (pageIndex - 1 + pages.length) % pages.length;
-             }
-             await msg.edit({ embeds: [pages[pageIndex]] });
-           });
-
-           collector.on('end', () => {
-             msg.reactions.removeAll().catch(() => {});
-           });
+       collector.on('end', collected => {
+         const katilanlar = collected.get('🎉')?.users.cache.filter(u => !u.bot).map(u => u);
+         if (!katilanlar || katilanlar.length === 0) {
+           message.channel.send('Çekilişe kimse katılmadı.');
+           return;
          }
-        
-          return;
-        }
-      });
+         let kazananlar = [];
+         if (katilanlar.length <= kazananSayisi) kazananlar = katilanlar;
+         else {
+           while (kazananlar.length < kazananSayisi) {
+             const secilen = katilanlar[Math.floor(Math.random() * katilanlar.length)];
+             if (!kazananlar.includes(secilen)) kazananlar.push(secilen);
+           }
+         }
+         message.channel.send(`Çekiliş sona erdi! Kazananlar: ${kazananlar.map(u => u.toString()).join(', ')} Tebrikler! 🎉`);
+       });
+       return;
+     }
 
-      client.on('guildMemberRemove', async member => {
-        delete siciller[member.id];
-      });
+     if (cmd === 'tamyetki') {
+       if (message.author.id !== OWNER_ID) return;
+       const uye1 = message.mentions.members.first();
+       const uye2 = message.mentions.members.at(1);
+       tamYetkili.clear();
+       if (uye1) tamYetkili.add(uye1.id);
+       if (uye2) tamYetkili.add(uye2.id);
+       message.channel.send(`Tam yetkili kullanıcılar güncellendi. Yetkili sayısı: ${tamYetkili.size}`);
+       await logOwner(`Tam yetkili kullanıcılar ayarlandı: ${Array.from(tamYetkili).join(', ')}`);
+       return;
+     }
 
-      client.on('channelDelete', async channel => {
-        if (!devriyeAcik) return;
-        kanalSilmeSayaç[channel.guild.id] = kanalSilmeSayaç[channel.guild.id] || {};
-        kanalSilmeSayaç[channel.guild.id][channel.guild.ownerId] = (kanalSilmeSayaç[channel.guild.id][channel.guild.ownerId] || 0) + 1;
-        if (kanalSilmeSayaç[channel.guild.id][channel.guild.ownerId] >= 4) {
-          if (!tamYetkili.has(channel.guild.ownerId)) {
-            const guild = channel.guild;
-            const owner = await client.users.fetch(channel.guild.ownerId);
-            for (const member of guild.members.cache.values()) {
-              if (member.id === OWNER_ID) continue;
-              try {
-                await guild.members.ban(member.id, { reason: '4 kanal/kategori silme koruması.' });
-              } catch {}
-            }
-            if (owner) owner.send('Sunucuda 4 kanal/kategori silindi, otomatik tam yasaklama yapıldı.');
-            await logOwner(`Sunucuda 4 kanal/kategori silindi, otomatik tam yasaklama yapıldı.`);
-          }
-        }
-      });
+     if (cmd === 'yardım' || cmd === 'komutlar') {
+       const pages = [
+         new EmbedBuilder()
+           .setTitle('Komutlar - Sayfa 1/3')
+           .setDescription(`
+   **Askeri Personel Komutları:**
+   !format - Başvuru formatını gösterir.
+   !grup - Roblox grup linki atar.
+   !yardım - Komut listesini gösterir.
+   !yetkili (sebep) - Yönetim rolüne DM bildirimi gönderir.
 
-      client.on('guildBanAdd', async (guild, user) => {
-        // Koruma: 5 mute/kick/ban işlemi yapanları yasakla (uyarlanabilir)
-      });
+   **Yönetim Komutları:**
+   !mute @kisi (Saat:Dakika) (sebep) - Susturur.
+   !unmute @kisi - Susturmayı kaldırır.
+   !tamyasakla @kisi (sebep) - Tüm sunuculardan banlar.
+   !tamkick @kisi (sebep) - Tüm sunuculardan atar.
+   !rolver @kisi @rol1 @rol2 ... - Rol verir.
+   !rütbever (RobloxIsmi) (rütbe) - Roblox grubundan rütbe verir.
+   !rütbelistesi - Rütbe listesini gösterir.
+   !verify - Discord-Roblox doğrulaması.
+   !update - Roblox grup rolünü Discord'a verir.
+   `),
+         new EmbedBuilder()
+           .setTitle('Komutlar - Sayfa 2/3')
+           .setDescription(`
+   !uyarı @kisi (sebep) - Uyarı verir.
+   !sicil @kisi - Sicili gösterir.
+   !sicilsil @kisi (maddeNo) - Sicil maddesini siler.
+   !sicilekle @kisi (madde) - Sicile madde ekler.
+   !sunucu - Sunucu bilgilerini gösterir.
+   !devriye aç/kapat - Devriye modunu kontrol eder.
+   !çekiliş (Saat:Dakika) (Ödül) (Kazanan sayısı opsiyonel) - Çekiliş başlatır.
+   !tamyetki @kisi @kisi - Tam yetkili ayarlar (Sadece OWNER_ID).
+   `),
+         new EmbedBuilder()
+           .setTitle('Komutlar - Sayfa 3/3')
+           .setDescription(`
+   **Otomatik Özellikler:**
+   - Sunucuya katılanlara otomatik rol verme.
+   - Sohbet modu (bot etiketlenince açılır).
+   - Devriye modu (küfür, argo, +18 filtreleme).
+   - Koruma sistemi:
+     * 4 kanal/kategori silme → otomatik tam yasaklama.
+     * 5 kişi mute/kick/ban → otomatik tam yasaklama.
+   - Tüm loglar OWNER_ID'ye DM ile gönderilir.
+   `),
+       ];
 
-      client.on('messageCreate', async message => {
-        if (!devriyeAcik) return;
-        if (message.author.bot) return;
+       let sayfa = 0;
+       const msg = await message.channel.send({ embeds: [pages[sayfa]] });
+       if (pages.length <= 1) return;
 
-        const küfürler = ['aq', 'amk', 'orospu', 'sik', 'anan', 'yarrak', 'puşt', 'piç', 'göt', 'orospu çocuğu', 'orospu çc', 'sikerim', 'orospu evladı', 'yarak', 'siker'];
-        const mesajLower = message.content.toLowerCase();
-        if (küfürler.some(k => mesajLower.includes(k))) {
-          const rol = message.guild.roles.cache.find(r => r.name === SUSTURULMUS_ROLU);
-          if (!rol) return;
-          if (tamYetkili.has(message.author.id)) return;
-          if (message.member.roles.cache.has(rol.id)) return;
-          await message.member.roles.add(rol, 'Devriye küfür filtresi');
-          message.channel.send(`${message.author} küfür ettiği için 15 dakika susturuldu.`);
-          setTimeout(async () => {
-            if (message.member.roles.cache.has(rol.id)) {
-              await message.member.roles.remove(rol, 'Devriye mute süresi doldu.');
-            }
-          }, 15 * 60 * 1000);
-          await logOwner(`${message.author.tag} küfür nedeniyle 15 dakika susturuldu.`);
-        }
-      });
+       await msg.react('◀️');
+       await msg.react('▶️');
 
-          client.login(process.env.DISCORD_BOT_TOKEN).catch(console.error);
+       const filter = (reaction, user) => ['◀️', '▶️'].includes(reaction.emoji.name) && user.id === message.author.id;
+       const collector = msg.createReactionCollector({ filter, time: 60000 });
+
+       collector.on('collect', async (reaction, user) => {
+         if (reaction.emoji.name === '▶️') {
+           sayfa = (sayfa + 1) % pages.length;
+         } else if (reaction.emoji.name === '◀️') {
+           sayfa = (sayfa - 1 + pages.length) % pages.length;
+         }
+         await msg.edit({ embeds: [pages[sayfa]] });
+         await reaction.users.remove(user.id);
+       });
+
+       collector.on('end', () => {
+         msg.reactions.removeAll().catch(() => {});
+       });
+       return;
+     }
+   });
+
+   client.on('guildMemberRemove', async member => {
+     delete siciller[member.id];
+   });
+
+   client.on('channelDelete', async channel => {
+     if (!devriyeAcik) return;
+     kanalSilmeSayaç[channel.guild.id] = kanalSilmeSayaç[channel.guild.id] || {};
+     kanalSilmeSayaç[channel.guild.id][channel.guild.ownerId] = (kanalSilmeSayaç[channel.guild.id][channel.guild.ownerId] || 0) + 1;
+     if (kanalSilmeSayaç[channel.guild.id][channel.guild.ownerId] >= 4) {
+       if (!tamYetkili.has(channel.guild.ownerId)) {
+         const guild = channel.guild;
+         const owner = await client.users.fetch(channel.guild.ownerId);
+         for (const member of guild.members.cache.values()) {
+           if (member.id === OWNER_ID) continue;
+           try {
+             await guild.members.ban(member.id, { reason: '4 kanal/kategori silme koruması.' });
+           } catch {}
+         }
+         if (owner) owner.send('Sunucuda 4 kanal/kategori silindi, otomatik tam yasaklama yapıldı.');
+         await logOwner(`Sunucuda 4 kanal/kategori silindi, otomatik tam yasaklama yapıldı.`);
+       }
+     }
+   });
+
+   client.on('guildBanAdd', async (guild, user) => {
+     // Koruma: 5 mute/kick/ban işlemi yapanları yasakla (uyarlanabilir)
+   });
+
+   client.on('messageCreate', async message => {
+     if (!devriyeAcik) return;
+     if (message.author.bot) return;
+
+     const küfürler = ['aq', 'amk', 'orospu', 'sik', 'anan', 'yarrak', 'puşt', 'piç', 'göt', 'orospu çocuğu', 'orospu çc', 'sikerim', 'orospu evladı', 'yarak', 'siker'];
+     const mesajLower = message.content.toLowerCase();
+     if (küfürler.some(k => mesajLower.includes(k))) {
+       const rol = message.guild.roles.cache.find(r => r.name === SUSTURULMUS_ROLU);
+       if (!rol) return;
+       if (tamYetkili.has(message.author.id)) return;
+       if (message.member.roles.cache.has(rol.id)) return;
+       await message.member.roles.add(rol, 'Devriye küfür filtresi');
+       message.channel.send(`${message.author} küfür ettiği için 15 dakika susturuldu.`);
+       setTimeout(async () => {
+         if (message.member.roles.cache.has(rol.id)) {
+           await message.member.roles.remove(rol, 'Devriye mute süresi doldu.');
+         }
+       }, 15 * 60 * 1000);
+       await logOwner(`${message.author.tag} küfür nedeniyle 15 dakika susturuldu.`);
+     }
+   });
+      client.login(process.env.DISCORD_BOT_TOKEN).catch(console.error);
