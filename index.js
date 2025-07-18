@@ -246,16 +246,25 @@ tag: <@&1393136901552345095>`);
     return;
     }
 
-    if (cmd === 'rütbelistesi') {
-    if (!await hasRole(message, YONETIM_ROLU)) return message.reply('Yetkin yok.');
-    // Örnek rütbe listesi
-    const rutbeler = ['Üye', 'Çavuş', 'Teğmen', 'Yüzbaşı', 'Albay', 'General'];
-    const embed = new EmbedBuilder()
-      .setTitle('Roblox Grup Rütbeleri')
-      .setDescription(rutbeler.map((r, i) => `${i + 1}. ${r}`).join('\n'));
-    message.channel.send({ embeds: [embed] });
-    return;
-    }
+   const { getRoles } = require('rowifi');
+
+   if (cmd === 'rütbelistesi') {
+     try {
+       const roles = await getRoles(GROUP_ID); // GROUP_ID secrets içinde tanımlı
+       const embed = new EmbedBuilder()
+         .setTitle('Roblox Grubu Rütbeleri')
+         .setColor('Blue');
+
+       roles.forEach(role => {
+         embed.addFields({ name: role.name, value: `ID: ${role.id}`, inline: true });
+       });
+
+       return message.channel.send({ embeds: [embed] });
+     } catch (err) {
+       console.error(err);
+       return message.channel.send('Rütbeler alınırken bir hata oluştu.');
+     }
+   }
 
     if (cmd === 'verify') {
     // Discord-Roblox doğrulama işlemi
@@ -450,78 +459,38 @@ tag: <@&1393136901552345095>`);
           await logOwner(`Tam yetkili kullanıcılar ayarlandı: ${Array.from(tamYetkili).join(', ')}`);
           return;
         }
+         if (cmd === 'yardım' || cmd === 'komutlar') {
+           const pages = [
+             new EmbedBuilder().setTitle('Komutlar - Sayfa 1/2').setDescription('...'),
+             new EmbedBuilder().setTitle('Komutlar - Sayfa 2/2').setDescription('...')
+           ];
+           let pageIndex = 0;
+           const msg = await message.channel.send({ embeds: [pages[pageIndex]] });
 
-        if (cmd === 'yardım' || cmd === 'komutlar') {
-          const pages = [
-            new EmbedBuilder()
-              .setTitle('Komutlar - Sayfa 1/3')
-              .setDescription(`
-      **Askeri Personel Komutları:**
-      !format - Başvuru formatını gösterir.
-      !grup - Roblox grup linki atar.
-      !yardım - Komut listesini gösterir.
-      !yetkili (sebep) - Yönetim rolüne DM bildirimi gönderir.
+           await msg.react('◀️');
+           await msg.react('▶️');
 
-      **Yönetim Komutları:**
-      !mute @kisi (Saat:Dakika) (sebep) - Susturur.
-      !unmute @kisi - Susturmayı kaldırır.
-      !tamyasakla @kisi (sebep) - Tüm sunuculardan banlar.
-      !tamkick @kisi (sebep) - Tüm sunuculardan atar.
-      !rolver @kisi @rol1 @rol2 ... - Rol verir.
-      !rütbever (RobloxIsmi) (rütbe) - Roblox grubundan rütbe verir.
-      !rütbelistesi - Rütbe listesini gösterir.
-      !verify - Discord-Roblox doğrulaması.
-      !update - Roblox grup rolünü Discord'a verir.
-      `),
-            new EmbedBuilder()
-              .setTitle('Komutlar - Sayfa 2/3')
-              .setDescription(`
-      !uyarı @kisi (sebep) - Uyarı verir.
-      !sicil @kisi - Sicili gösterir.
-      !sicilsil @kisi (maddeNo) - Sicil maddesini siler.
-      !sicilekle @kisi (madde) - Sicile madde ekler.
-      !sunucu - Sunucu bilgilerini gösterir.
-      !devriye aç/kapat - Devriye modunu kontrol eder.
-      !çekiliş (Saat:Dakika) (Ödül) (Kazanan sayısı opsiyonel) - Çekiliş başlatır.
-      !tamyetki @kisi @kisi - Tam yetkili ayarlar (Sadece OWNER_ID).
-      `),
-            new EmbedBuilder()
-              .setTitle('Komutlar - Sayfa 3/3')
-              .setDescription(`
-      **Otomatik Özellikler:**
-      - Sunucuya katılanlara otomatik rol verme.
-      - Sohbet modu (bot etiketlenince açılır).
-      - Devriye modu (küfür, argo, +18 filtreleme).
-      - Koruma sistemi:
-        * 4 kanal/kategori silme → otomatik tam yasaklama.
-        * 5 kişi mute/kick/ban → otomatik tam yasaklama.
-      - Tüm loglar OWNER_ID'ye DM ile gönderilir.
-      `),
-          ];
+           const filter = (reaction, user) => {
+             return ['◀️', '▶️'].includes(reaction.emoji.name) && user.id === message.author.id;
+           };
 
-          let sayfa = 0;
-          const msg = await message.channel.send({ embeds: [pages[sayfa]] });
-          if (pages.length <= 1) return;
+           const collector = msg.createReactionCollector({ filter, time: 60000 });
 
-          await msg.react('◀️');
-          await msg.react('▶️');
+           collector.on('collect', async (reaction, user) => {
+             reaction.users.remove(user.id).catch(() => {});
+             if (reaction.emoji.name === '▶️') {
+               pageIndex = (pageIndex + 1) % pages.length;
+             } else if (reaction.emoji.name === '◀️') {
+               pageIndex = (pageIndex - 1 + pages.length) % pages.length;
+             }
+             await msg.edit({ embeds: [pages[pageIndex]] });
+           });
 
-          const filter = (reaction, user) => ['◀️', '▶️'].includes(reaction.emoji.name) && user.id === message.author.id;
-          const collector = msg.createReactionCollector({ filter, time: 60000 });
-
-          collector.on('collect', async (reaction, user) => {
-            if (reaction.emoji.name === '▶️') {
-              sayfa = (sayfa + 1) % pages.length;
-            } else if (reaction.emoji.name === '◀️') {
-              sayfa = (sayfa - 1 + pages.length) % pages.length;
-            }
-            await msg.edit({ embeds: [pages[sayfa]] });
-            await reaction.users.remove(user.id);
-          });
-
-          collector.on('end', () => {
-            msg.reactions.removeAll().catch(() => {});
-          });
+           collector.on('end', () => {
+             msg.reactions.removeAll().catch(() => {});
+           });
+         }
+        
           return;
         }
       });
