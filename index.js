@@ -24,7 +24,7 @@ const client = new Client({
 const TOKEN = process.env.DISCORD_BOT_TOKEN;
 const OWNER_ID = process.env.OWNER_ID;
 const GROUP_ID = Number(process.env.GROUP_ID);
-const AUTH_CKIE = process.env.ROBLX_COOK_COOKIE; // Cookie ismi gizlendi
+const ROBLX_COOK_COOKIE = process.env.ROBLX_COOK_COOKIE; // Cookie ismi gizlendi
 
 // Sabit roller ve isimleri
 const MUTE_ROLE = "Susturulmuß";
