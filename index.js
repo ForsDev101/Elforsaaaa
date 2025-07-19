@@ -13,7 +13,7 @@ const client = new Client({
 });
 (async () => {
   try {
-    await noblox.setCookie(process.env.ROBLX_COOK_COOKIE);
+    await noblox.setCookie(process.env.AUTH_CKIE);
     const user = await noblox.getCurrentUser();
     console.log(`[✅] Roblox cookie başarıyla yüklendi: ${user.UserName}`);
   } catch (err) {
@@ -24,7 +24,7 @@ const client = new Client({
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const OWNER_ID = process.env.OWNER_ID;
 const GROUP_ID = Number(process.env.GROUP_ID);
-const ROBLX_COOK_COOKIE = process.env.ROBLX_COOK_COOKIE; // Cookie ismi gizlendi
+const AUTH_CKIE = process.env.AUTH_CKIE; // Cookie ismi gizlendi
 
 // Sabit roller ve isimleri
 const MUTE_ROLE = "Susturulmuß";
