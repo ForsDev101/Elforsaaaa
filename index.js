@@ -21,7 +21,7 @@ const client = new Client({
   }
 })();
 // Secretler (Zeabur için environment variables olarak tanımla)
-const TOKEN = process.env.DISCORD_BOT_TOKEN;
+const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 const OWNER_ID = process.env.OWNER_ID;
 const GROUP_ID = Number(process.env.GROUP_ID);
 const ROBLX_COOK_COOKIE = process.env.ROBLX_COOK_COOKIE; // Cookie ismi gizlendi
